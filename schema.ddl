@@ -5,35 +5,39 @@ SET SEARCH_PATH TO A3GLG;
 
 -- Possible values for level_of_study.
 CREATE TYPE level_of_study AS ENUM ('Undergraduate', 'Graduate', 'Alumni');
-CREATE TYPE role as ENUM ('President', 'Events coordinator', 'Social media coordinator',
-'Graphic designer','Treasurer');
-CREATE TYPE category as ENUM ('Strategy', 'Party', 'Deck-building', 'Role-building', 
-'Social-deduction');
-CREATE TYPE physical_condition as ENUM ('New', 'Light_used', 'Worn', 'Implemented', 'Damaged');
+CREATE TYPE role as ENUM ('President', 'Events coordinator', 
+'Social media coordinator','Graphic designer','Treasurer');
+CREATE TYPE category as ENUM ('Strategy', 'Party', 'Deck-building', 
+'Role-building', 'Social-deduction');
+CREATE TYPE physical_condition as ENUM ('New', 'Light_used', 'Worn', 
+'Implemented', 'Damaged');
 
 CREATE DOMAIN NonNegReal AS REAL CHECK (VALUE >= 0.0);
 
 -- A member, their name <name>, their email <email_id>, 
 -- and their level_of_study <level_of_study>.
 CREATE TABLE Member (
+    mid SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     email_id VARCHAR(500) PRIMARY KEY,
     class level_of_study NOT NULL
 );
 
--- An executive member, their email <email_id>, their role <role>, 
+-- An executive member, their member id <mid>, their role <role>, 
 -- and the date since they assumed that responsibility <start_date>.
 CREATE TABLE ExecMember (
-    email_id VARCHAR(500) PRIMARY KEY REFERENCES member(email_id),
+    mid INT PRIMARY KEY REFERENCES Member(mid),
     class role NOT NULL,
     start_date DATE NOT NULL
 );
 
 -- A board game, identified by its title <title>, has category <category>, 
--- a minimum player limit <minimum_player_limit>, a maximum player limit <maximum_player_limit>,
--- publisher <publisher>, and release year <release_year>. 
+-- a minimum player limit <minimum_player_limit>, a maximum player limit 
+-- <maximum_player_limit>, publisher <publisher>, and release year 
+-- <release_year>. 
 CREATE TABLE BoardGame (
-    title VARCHAR(500) PRIMARY KEY,
+    game_id SERIAL PRIMARY KEY,
+    title VARCHAR(500) NOT NULL,
     minimum_player_limit NonNegReal NOT NULL,
     maximum_player_limit NonNegReal NOT NULL,
     publisher TEXT NOT NULL,
@@ -44,7 +48,7 @@ CREATE TABLE BoardGame (
 -- track_copies
 CREATE TABLE TrackCopies (
     tgid INT PRIMARY KEY,
-    game_title VARCHAR(500) NOT NULL REFERENCES boardGame(title),
+    game_id INT NOT NULL REFERENCES boardGame(game_id),
     class physical_condition NOT NULL,
     acquired_time DATE NOT NULL
 );
@@ -61,13 +65,13 @@ CREATE TABLE Event (
 -- Committee
 CREATE TABLE Committee (
     cid INT PRIMARY KEY, 
-    leader VARCHAR(200) UNIQUE NOT NULL REFERENCES ExecMember(email_id)
+    leader INT NOT NULL REFERENCES ExecMember(mid)
 );
 
 -- CommitteeFellow
 CREATE TABLE CommitteeFellow (
     cid INT PRIMARY KEY REFERENCES Committee(cid),
-    fellow VARCHAR(200) NOT NULL REFERENCES ExecMember(email_id)
+    fellow INT NOT NULL REFERENCES ExecMember(mid)
 );
 
 -- Organize
@@ -82,7 +86,7 @@ CREATE TABLE GameSession (
     gsid INT PRIMARY KEY,
     game VARCHAR(500) NOT NULL REFERENCES boardGame(title),
     eid INT NOT NULL REFERENCES event(eid),
-    facilitator VARCHAR(500) NOT NULL REFERENCES ExecMember(email_id)
+    facilitator INT NOT NULL REFERENCES ExecMember(mid)
 );
 
 -- Trigger for ensuring one exec member facilitate only one event
@@ -119,8 +123,8 @@ EXECUTE FUNCTION check_facilitator_conflict();
 -- Participant
 CREATE TABLE Participant (
     gsid INT REFERENCES gameSession(gsid),
-    email_id VARCHAR(500) NOT NULL REFERENCES member(email_id),
-    PRIMARY KEY(gsid, email_id)
+    mid INT NOT NULL REFERENCES member(mid),
+    PRIMARY KEY(gsid, mid)
 );
 
 -- Trigger for ensuring one member can only participate in only
@@ -134,7 +138,7 @@ BEGIN
         natural join Event) orig_p
         JOIN (GameSession natural join Event) new_p ON NEW.gsid = new_p.gsid
         WHERE 
-            orig_p.email_id = NEW.email_id
+            orig_p.mid = NEW.mid
             AND orig_p.gsid <> NEW.gsid
             AND (
                 orig_p.start_datetime, orig_p.end_datetime
