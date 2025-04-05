@@ -116,8 +116,8 @@ BEFORE INSERT OR UPDATE ON GameSession
 FOR EACH ROW
 EXECUTE FUNCTION check_facilitator_conflict();
 
--- participant
-CREATE TABLE participant (
+-- Participant
+CREATE TABLE Participant (
     gsid INT REFERENCES gameSession(gsid),
     email_id VARCHAR(500) NOT NULL REFERENCES member(email_id),
     PRIMARY KEY(gsid, email_id)
@@ -125,7 +125,7 @@ CREATE TABLE participant (
 
 -- Trigger for ensuring one member can only participate in only
 -- one game session at the same time.
-CREATE OR REPLACE FUNCTION check_participant_conflict()
+CREATE OR REPLACE FUNCTION check_Participant_conflict()
 RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS (
@@ -149,7 +149,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER participant_trg
+CREATE TRIGGER Participant_trg
 BEFORE INSERT OR UPDATE ON Participant
 FOR EACH ROW
-EXECUTE FUNCTION check_participant_conflict();
+EXECUTE FUNCTION check_Participant_conflict();
