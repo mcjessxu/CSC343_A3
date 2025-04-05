@@ -4,7 +4,7 @@ CREATE SCHEMA A3GLG;
 SET SEARCH_PATH TO A3GLG;
 
 -- Possible values for level_of_study.
-CREATE TYPE level_of_study AS ENUM ('undergraduate', 'graduate', 'alumni');
+CREATE TYPE level_of_study AS ENUM ('Undergraduate', 'Graduate', 'Alumni');
 CREATE TYPE role as ENUM ('President', 'Events coordinator', 'Social media coordinator',
 'Graphic designer','Treasurer');
 CREATE TYPE category as ENUM ('Strategy', 'Party', 'Deck-building', 'Role-building', 
@@ -65,15 +65,16 @@ CREATE TABLE Committee (
 );
 
 -- CommitteeFellow
-CREATE TABLE CommitteFellow (
+CREATE TABLE CommitteeFellow (
     cid INT PRIMARY KEY REFERENCES Committee(cid),
     fellow VARCHAR(200) NOT NULL REFERENCES ExecMember(email_id)
 );
 
 -- Organize
 CREATE TABLE Organize (
-    cid INT PRIMARY KEY REFERENCES Committee(cid),
-    eid INT UNIQUE NOT NULL REFERENCES event(eid)
+    cid INT REFERENCES Committee(cid),
+    eid INT UNIQUE NOT NULL REFERENCES event(eid),
+    PRIMARY KEY(cid, eid)
 );
 
 -- GameSession
@@ -117,8 +118,9 @@ EXECUTE FUNCTION check_facilitator_conflict();
 
 -- participant
 CREATE TABLE participant (
-    gsid INT PRIMARY KEY REFERENCES gameSession(gsid),
-    email_id VARCHAR(500) NOT NULL REFERENCES member(email_id)
+    gsid INT REFERENCES gameSession(gsid),
+    email_id VARCHAR(500) NOT NULL REFERENCES member(email_id),
+    PRIMARY KEY(gsid, email_id)
 );
 
 -- Trigger for ensuring one member can only participate in only

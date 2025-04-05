@@ -1,0 +1,10 @@
+\copy Member FROM './data/Member.csv' WITH (FORMAT CSV);
+\copy ExecMember FROM './data/ExecMember.csv' WITH (FORMAT CSV);
+\copy BoardGame FROM './data/BoardGame.csv' WITH (FORMAT CSV);
+\copy TrackCopies FROM './data/TrackCopies.csv' WITH (FORMAT CSV);
+\copy Committee FROM './data/Committee.csv' WITH (FORMAT CSV);
+\copy CommitteeFellow FROM './data/CommitteeFellow.csv' WITH (FORMAT CSV);
+\copy Event FROM './data/Event.csv' WITH (FORMAT CSV);
+\copy GameSession FROM './data/GameSession.csv' WITH (FORMAT CSV);
+\copy Organize FROM './data/Organize.csv' WITH (FORMAT CSV);
+\copy Participant FROM './data/Participant.csv' WITH (FORMAT CSV);
