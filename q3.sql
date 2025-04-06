@@ -1,7 +1,8 @@
 create or replace view fclt_times as
-select game, facilitator, count(gsid) as times
+select game_id, facilitator, count(gsid) as times
 from GameSession
-group by game, facilitator;
+group by game_id, facilitator;
 
-select game from fclt_times
-where times = (select max(times) from fclt_times);
+select * from BoardGame natural join
+(select game_id from fclt_times
+where times = (select max(times) from fclt_times)) a;

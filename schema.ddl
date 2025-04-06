@@ -19,7 +19,7 @@ CREATE DOMAIN NonNegReal AS REAL CHECK (VALUE >= 0.0);
 CREATE TABLE Member (
     mid SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
-    email_id VARCHAR(500) PRIMARY KEY,
+    email_id VARCHAR(500) UNIQUE NOT NULL,
     class level_of_study NOT NULL
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE BoardGame (
     class category NOT NULL
 );
 
--- track_copies
+-- TrackCopies
 CREATE TABLE TrackCopies (
     tgid INT PRIMARY KEY,
     game_id INT NOT NULL REFERENCES boardGame(game_id),
@@ -53,7 +53,7 @@ CREATE TABLE TrackCopies (
     acquired_time DATE NOT NULL
 );
 
--- Events
+-- Event
 CREATE TABLE Event (
     eid INT PRIMARY KEY,
     name VARCHAR(500) NOT NULL,
@@ -83,10 +83,16 @@ CREATE TABLE Organize (
 
 -- GameSession
 CREATE TABLE GameSession (
-    gsid INT PRIMARY KEY,
-    game VARCHAR(500) NOT NULL REFERENCES boardGame(title),
+    gsid SERIAL PRIMARY KEY,
+    game_id INT NOT NULL REFERENCES BoardGame(game_id),
     eid INT NOT NULL REFERENCES event(eid),
     facilitator INT NOT NULL REFERENCES ExecMember(mid)
+);
+
+-- UsedCopy
+CREATE TABLE UsedCopy (
+    gsid INT NOT NULL REFERENCES GameSession(gsid),
+    gcopy_id INT NOT NULL REFERENCES TrackCopies(tgid)
 );
 
 -- Trigger for ensuring one exec member facilitate only one event
