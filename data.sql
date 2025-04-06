@@ -8,3 +8,4 @@
 \copy GameSession FROM './data/GameSession.csv' WITH (FORMAT CSV);
 \copy Organize FROM './data/Organize.csv' WITH (FORMAT CSV);
 \copy Participant FROM './data/Participant.csv' WITH (FORMAT CSV);
+\copy UsedCopy FROM './data/UsedCopy.csv' WITH (FORMAT CSV);

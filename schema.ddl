@@ -132,8 +132,9 @@ CREATE OR REPLACE FUNCTION check_game_copy_matching()
 RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS(
-        SELECT * FROM (GameSession natural join TrackCopies) gs
-        WHERE new.gsid = gs.gsid and NEW.gcopy_id != gs.gcopy_id
+        SELECT * FROM GameSession gs, TrackCopies tc
+        WHERE new.gsid = gs.gsid and new.gcopy_id = tc.gcopy_id
+        and gs.game_id != tc.game_id
     )
     THEN
         RAISE EXCEPTION 'Game copy does not match this game session';
