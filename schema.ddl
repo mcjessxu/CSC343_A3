@@ -47,7 +47,7 @@ CREATE TABLE BoardGame (
 
 -- TrackCopies
 CREATE TABLE TrackCopies (
-    tgid INT PRIMARY KEY,
+    gcopy_id INT PRIMARY KEY,
     game_id INT NOT NULL REFERENCES boardGame(game_id),
     class physical_condition NOT NULL,
     acquired_time DATE NOT NULL
@@ -89,12 +89,6 @@ CREATE TABLE GameSession (
     facilitator INT NOT NULL REFERENCES ExecMember(mid)
 );
 
--- UsedCopy
-CREATE TABLE UsedCopy (
-    gsid INT NOT NULL REFERENCES GameSession(gsid),
-    gcopy_id INT NOT NULL REFERENCES TrackCopies(tgid)
-);
-
 -- Trigger for ensuring one exec member facilitate only one event
 -- at the same time.
 CREATE OR REPLACE FUNCTION check_facilitator_conflict()
@@ -114,7 +108,7 @@ BEGIN
                 E2.start_datetime, E2.end_datetime
             )
     ) THEN
-        RAISE EXCEPTION 'Member % is already facilitating another game session at the same time.', NEW.facilitator;
+        RAISE EXCEPTION 'Member ID % is already facilitating another game session at the same time.', NEW.facilitator;
     END IF;
 
     RETURN NEW;
@@ -125,6 +119,34 @@ CREATE TRIGGER facilitator_trg
 BEFORE INSERT OR UPDATE ON GameSession
 FOR EACH ROW
 EXECUTE FUNCTION check_facilitator_conflict();
+
+-- UsedCopy
+CREATE TABLE UsedCopy (
+    gsid INT NOT NULL REFERENCES GameSession(gsid),
+    gcopy_id INT NOT NULL REFERENCES TrackCopies(gcopy_id)
+);
+
+-- Trigger for ensuring the game sessions use matching board game copies.
+
+CREATE OR REPLACE FUNCTION check_game_copy_matching()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS(
+        SELECT * FROM (GameSession natural join TrackCopies) gs
+        WHERE new.gsid = gs.gsid and NEW.gcopy_id != gs.gcopy_id
+    )
+    THEN
+        RAISE EXCEPTION 'Game copy does not match this game session';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER game_copy_trg
+BEFORE INSERT OR UPDATE ON UsedCopy
+FOR EACH ROW
+EXECUTE FUNCTION check_game_copy_matching();
 
 -- Participant
 CREATE TABLE Participant (
@@ -152,7 +174,7 @@ BEGIN
                 new_p.start_datetime, new_p.end_datetime
             )
     ) THEN
-        RAISE EXCEPTION 'Member % is already participate another game session at the same time.', NEW.email_id;
+        RAISE EXCEPTION 'Member ID % is already participate another game session at the same time.', NEW.email_id;
     END IF;
 
     RETURN NEW;
