@@ -1,0 +1,122 @@
+csc343h-xumengc2=> \i runner.txt
+-------------------- Loading schema and data: --------------------
+
+psql:schema.ddl:29: NOTICE:  drop cascades to 23 other objects
+DETAIL:  drop cascades to type a3glg.level_of_study
+drop cascades to type a3glg.role
+drop cascades to type a3glg.category
+drop cascades to type a3glg.physical_condition
+drop cascades to type a3glg.nonnegreal
+drop cascades to table a3glg.member
+drop cascades to table a3glg.execmember
+drop cascades to table a3glg.boardgame
+drop cascades to table a3glg.trackcopies
+drop cascades to table a3glg.event
+drop cascades to table a3glg.committee
+drop cascades to table a3glg.committeefellow
+drop cascades to table a3glg.organize
+drop cascades to table a3glg.gamesession
+drop cascades to function a3glg.check_facilitator_conflict()
+drop cascades to table a3glg.usedcopy
+drop cascades to function a3glg.check_game_copy_matching()
+drop cascades to table a3glg.participant
+drop cascades to function a3glg.check_participant_conflict()
+drop cascades to view a3glg.event_with_games
+drop cascades to view a3glg.should_have_participated
+drop cascades to view a3glg.did_not_participat
+drop cascades to view a3glg.ans
+DROP SCHEMA
+CREATE SCHEMA
+SET
+CREATE TYPE
+CREATE TYPE
+CREATE TYPE
+CREATE TYPE
+CREATE DOMAIN
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TABLE
+CREATE FUNCTION
+CREATE TRIGGER
+COPY 16
+COPY 4
+COPY 6
+COPY 8
+COPY 3
+COPY 1
+COPY 5
+COPY 7
+COPY 5
+COPY 34
+COPY 7
+
+-------------------- Query 1: -----------------------------------
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+ round 
+-------
+    19
+(1 row)
+
+
+-------------------- Query 2: -----------------------------------
+
+ gcopy_id | game_id | played_time 
+----------+---------+-------------
+        1 |       1 |           2
+        2 |       2 |           1
+        3 |       3 |           1
+        4 |       4 |           0
+        5 |       5 |           1
+        6 |       5 |           0
+        7 |       6 |           2
+        8 |       6 |           0
+(8 rows)
+
+
+-------------------- Query 3: -----------------------------------
+
+CREATE VIEW
+ game_id |          title          | minimum_player_limit | maximum_player_limit | publisher | release_year |  class   
+---------+-------------------------+----------------------+----------------------+-----------+--------------+----------
+       1 | Blood on the Clocktower |                    1 |                    1 | aaa       |         2024 | Strategy
+(1 row)
+
+
+-------------------- Query 4: -----------------------------------
+
+CREATE VIEW
+ mid |  name  |        email_id         |     class     | times 
+-----+--------+-------------------------+---------------+-------
+   6 | Tawfiq | tawfiq@mail.utoronto.ca | Undergraduate |     4
+   7 | Jimbo  | jimbo@mail.utoronto.ca  | Undergraduate |     4
+   8 | Evelyn | evelyn@mail.utoronto.ca | Undergraduate |     4
+(3 rows)
+
+-------------------- Query 5: -----------------------------------
+
+CREATE VIEW
+CREATE VIEW
+ eid |        name         | average 
+-----+---------------------+---------
+   3 | basement clocktower |       7
+   4 | basement clocktower |       7
+   2 | weekly borad game   |       4
+   1 | weekly borad game   |       3
+   5 | social event        |       0
+(5 rows)
