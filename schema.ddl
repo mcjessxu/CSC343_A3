@@ -32,10 +32,16 @@ SET SEARCH_PATH TO A3GLG;
 
 -- Possible values for level_of_study.
 CREATE TYPE level_of_study AS ENUM ('Undergraduate', 'Graduate', 'Alumni');
+
+-- Possible values for roles in the GLG club.
 CREATE TYPE role as ENUM ('President', 'Events coordinator', 
 'Social media coordinator','Graphic designer','Treasurer');
+
+-- Possible values for categories of board games.
 CREATE TYPE category as ENUM ('Strategy', 'Party', 'Deck-building', 
 'Role-building', 'Social-deduction');
+
+-- Possible values for physical conditions of copies of a certian board game.
 CREATE TYPE physical_condition as ENUM ('New', 'Light_used', 'Worn', 
 'Implemented', 'Damaged');
 
@@ -72,7 +78,8 @@ CREATE TABLE BoardGame (
     class category NOT NULL
 );
 
--- TrackCopies
+-- TrackCopies: track a copy of a certain kind of board game with <game_id> by its game copy id <gcopy_id>, 
+-- and store information regarding the physical condition <physical_condition> and acquired time <acquired_time> of the copy
 CREATE TABLE TrackCopies (
     gcopy_id INT PRIMARY KEY,
     game_id INT NOT NULL REFERENCES boardGame(game_id),
@@ -80,7 +87,8 @@ CREATE TABLE TrackCopies (
     acquired_time DATE NOT NULL
 );
 
--- Event
+-- A event, identified by its event id <eid>, has name <name>, location <location>, 
+-- and is organized from start date time <start_datetime> to end date time <end_datetime>.
 CREATE TABLE Event (
     eid INT PRIMARY KEY,
     name VARCHAR(500) NOT NULL,
@@ -89,26 +97,28 @@ CREATE TABLE Event (
     end_datetime TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
--- Committee
+-- A committee, identified by its committee id <cid>, is led by a leader <leader>.
 CREATE TABLE Committee (
     cid INT PRIMARY KEY, 
     leader INT NOT NULL REFERENCES ExecMember(mid)
 );
 
--- CommitteeFellow
+-- A committee fellow, identified by their member id <fellow> and is part of the 
+-- committee with id <cid>.
 CREATE TABLE CommitteeFellow (
     cid INT PRIMARY KEY REFERENCES Committee(cid),
     fellow INT NOT NULL REFERENCES ExecMember(mid)
 );
 
--- Organize
+-- Organize: A committee with id <cid> organizes a certain event with id <eid>.
 CREATE TABLE Organize (
     cid INT REFERENCES Committee(cid),
     eid INT UNIQUE NOT NULL REFERENCES event(eid),
     PRIMARY KEY(cid, eid)
 );
 
--- GameSession
+-- A game session, identified by its game session id <gsid>, uses a certian kind of board game with id <game_id> and 
+-- is led by a executive member <facilitator> and is part of the event with id <eid>.
 CREATE TABLE GameSession (
     gsid SERIAL PRIMARY KEY,
     game_id INT NOT NULL REFERENCES BoardGame(game_id),
@@ -179,7 +189,7 @@ BEFORE INSERT OR UPDATE ON UsedCopy
 FOR EACH ROW
 EXECUTE FUNCTION check_game_copy_matching();
 
--- Participant
+-- A particiapnt with a member id <mid> participates in a game session with id <gsid>
 CREATE TABLE Participant (
     gsid INT REFERENCES gameSession(gsid),
     mid INT NOT NULL REFERENCES member(mid),
