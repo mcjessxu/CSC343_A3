@@ -1,3 +1,30 @@
+-- Could not: What constraints from the domain specification could not be 
+-- enforced without assertions or triggers, if any?
+-- Answer: 
+-- Our schema design does not enforce the following without assertions or triggers:
+-- One executive member facilitates only one event at the same time.
+-- A certain kind of game with <game_id> a game session plans to use matches with 
+-- the used copy with a certain game copy id <gcopy_id> for a certain kind of game with <game_id>
+-- One member can only participate in one game session at the same time.
+
+-- Did not: What constraints from the domain specification could have been enforced without assertions 
+-- or triggers, but were not enforced, if any? Why not?
+-- Answer: No. We tried enforcing every possible constraints. 
+
+-- Extra constraints: What additional constraints that we didn’t mention did you enforce, if any?
+-- Each student has a unique member id <mid> and email id <email_id>
+-- Each kind of board game has a unique <game_id>
+-- Each copy of a kind of board game has a unique game copy id <gcopy_id>
+-- Each event has a unique event id <event_id>. Weekly events with the same names will also 
+-- get different event ids.
+-- Each committee has a unique committee id <cid>
+-- Each game session has a unique game session id <gsid>
+-- Multiple game sessions can be held inthe  same events
+
+-- Assumptions: What assumptions did you make?
+-- We assume that one turn for a game will last for the whole duration of a game session, 
+-- so every game copy can be only played once in a game session
+
 
 DROP SCHEMA IF EXISTS A3GLG CASCADE;
 CREATE SCHEMA A3GLG;
@@ -126,7 +153,10 @@ CREATE TABLE UsedCopy (
     gcopy_id INT NOT NULL REFERENCES TrackCopies(gcopy_id)
 );
 
--- Trigger for ensuring the game sessions use matching board game copies.
+-- Trigger for ensuring the game sessions use board game copies 
+-- for a certain kind of game with <game_id> 
+-- that matches with the used copy with a certain game copy id <gcopy_id> 
+-- for a certain kind of game with <game_id>
 
 CREATE OR REPLACE FUNCTION check_game_copy_matching()
 RETURNS TRIGGER AS $$
